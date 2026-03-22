@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>A TEAM สมัคร</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #0f172a;
+    color: white;
+    text-align: center;
+}
+
+/* Loading */
+#loader {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: #020617;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.bar {
+    width: 200px;
+    height: 10px;
+    background: #1e293b;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+.progress {
+    height: 100%;
+    width: 0%;
+    background: #38bdf8;
+}
+
+/* Main */
+#main { display: none; }
+
+.container {
+    background: #1e293b;
+    padding: 20px;
+    margin: auto;
+    width: 350px;
+    border-radius: 10px;
+}
+
+input {
+    width: 90%;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    border: none;
+}
+
+button {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    background: blue;
+    color: white;
+}
+
+.msg {
+    margin-top: 15px;
+    color: #38bdf8;
+}
+</style>
+
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loader">
+    <h1>Loading A TEAM...</h1>
+    <div class="bar">
+        <div class="progress" id="progress"></div>
+    </div>
+</div>
+
+<!-- Main -->
+<div id="main">
+
+<h1>A TEAM สมัคร</h1>
+
+<div class="container">
+    <p>เงื่อนไข:</p>
+    <p>1. เขียน Python ได้</p>
+    <p>2. อายุ 15+</p>
+    <p>3. ต้องมีเวลาให้ทีม</p>
+
+    <input type="text" id="name" placeholder="ชื่อเล่น">
+    <input type="number" id="age" placeholder="อายุ">
+    <input type="text" id="discord" placeholder="Discord ID">
+    <input type="text" id="time" placeholder="ว่างเวลาไหน">
+    <input type="text" id="skill" placeholder="ความสามารถ">
+
+    <button onclick="sendData()">สมัคร</button>
+
+    <div id="message" class="msg"></div>
+</div>
+
+</div>
+
+<script>
+// 🔥 ใส่ webhook ตรงนี้
+const WEBHOOK_URL = "https://ptb.discord.com/api/webhooks/1485238943224954955/WcvR3aIxUDrWbkQ30gb1VC9CFnd0--W1Zo8otWlJh0W4MLPVfOJ8pHl3cR79cRUWgb-5";
+
+// loading
+let progress = 0;
+let interval = setInterval(() => {
+    progress += Math.random() * 20;
+    if (progress >= 100) {
+        progress = 100;
+        clearInterval(interval);
+        document.getElementById("loader").style.display = "none";
+        document.getElementById("main").style.display = "block";
+    }
+    document.getElementById("progress").style.width = progress + "%";
+}, 300);
+
+// ส่งข้อมูล
+async function sendData() {
+    const name = document.getElementById("name").value;
+    const age = document.getElementById("age").value;
+    const discord = document.getElementById("discord").value;
+    const time = document.getElementById("time").value;
+    const skill = document.getElementById("skill").value;
+
+    if (!name || !age || !discord || !time || !skill) return alert("กรอกให้ครบ");
+    if (age < 15) return alert("15+ เท่านั้น");
+    if (!/^\\d+$/.test(discord)) return alert("Discord ID ต้องเป็นตัวเลข");
+
+    await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            content: `📩 สมัคร A TEAM
+<@${discord}>
+
+ชื่อ: ${name}
+อายุ: ${age}
+เวลา: ${time}
+ความสามารถ: ${skill}`
+        })
+    });
+
+    document.getElementById("message").innerText =
+        "✅ สมัครเรียบร้อย โปรดรอแอดมินตรวจสอบ แล้วจะประกาศ";
+
+    // เคลียร์ฟอร์ม
+    document.getElementById("name").value = "";
+    document.getElementById("age").value = "";
+    document.getElementById("discord").value = "";
+    document.getElementById("time").value = "";
+    document.getElementById("skill").value = "";
+}
+</script>
+
+</body>
+</html>

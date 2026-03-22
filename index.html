@@ -71,8 +71,8 @@ button {
     color: #38bdf8;
 }
 </style>
-
 </head>
+
 <body>
 
 <!-- Loading -->
@@ -96,7 +96,7 @@ button {
 
     <input type="text" id="name" placeholder="ชื่อเล่น">
     <input type="number" id="age" placeholder="อายุ">
-    <input type="text" id="discord" placeholder="Discord ID">
+    <input type="text" id="discord" inputmode="numeric" placeholder="Discord ID">
     <input type="text" id="time" placeholder="ว่างเวลาไหน">
     <input type="text" id="skill" placeholder="ความสามารถ">
 
@@ -109,7 +109,7 @@ button {
 
 <script>
 // 🔥 ใส่ webhook ตรงนี้
-const WEBHOOK_URL = "https://ptb.discord.com/api/webhooks/1485238943224954955/WcvR3aIxUDrWbkQ30gb1VC9CFnd0--W1Zo8otWlJh0W4MLPVfOJ8pHl3cR79cRUWgb-5";
+const WEBHOOK_URL = "https://ptb.discord.com/api/webhooks/1485236519928070235/dmP5g7fGvhYFmjxbtcFzuKPewYAwpFh_31pXP3-lNZ2AWxLo9HZMbCz8Nt5NIhwbKjz3";
 
 // loading
 let progress = 0;
@@ -126,15 +126,25 @@ let interval = setInterval(() => {
 
 // ส่งข้อมูล
 async function sendData() {
-    const name = document.getElementById("name").value;
-    const age = document.getElementById("age").value;
-    const discord = document.getElementById("discord").value;
-    const time = document.getElementById("time").value;
-    const skill = document.getElementById("skill").value;
+    const name = document.getElementById("name").value.trim();
+    const age = document.getElementById("age").value.trim();
 
-    if (!name || !age || !discord || !time || !skill) return alert("กรอกให้ครบ");
-    if (age < 15) return alert("15+ เท่านั้น");
-    if (!/^\\d+$/.test(discord)) return alert("Discord ID ต้องเป็นตัวเลข");
+    // 🔥 แก้ปัญหา Discord ID 100%
+    let discord = document.getElementById("discord").value;
+    discord = discord.replace(/\D/g, ""); // เอาเฉพาะตัวเลข
+
+    const time = document.getElementById("time").value.trim();
+    const skill = document.getElementById("skill").value.trim();
+
+    if (!name || !age || !discord || !time || !skill)
+        return alert("กรอกให้ครบ");
+
+    if (parseInt(age) < 15)
+        return alert("15+ เท่านั้น");
+
+    // 🔥 เช็คความยาวแทน regex
+    if (discord.length < 17 || discord.length > 20)
+        return alert("Discord ID ไม่ถูกต้อง");
 
     await fetch(WEBHOOK_URL, {
         method: "POST",
